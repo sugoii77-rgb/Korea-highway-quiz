@@ -61,16 +61,16 @@ header p {
 }
 
 .mode-btn {
-    padding: 12px 25px;
+    padding: 12px 20px;
     border: 2px solid #ecf0f1;
     border-radius: 25px;
     background: white;
     color: #7f8c8d;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    min-width: 150px;
+    min-width: 130px;
 }
 
 .mode-btn:hover {
@@ -241,6 +241,150 @@ button {
     border-radius: 8px;
     font-size: 0.9rem;
     line-height: 1.4;
+}
+
+.route-mode h2 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.route-mode p {
+    color: #7f8c8d;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.route-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.95rem;
+}
+
+.input-group select {
+    padding: 12px;
+    border: 2px solid #ecf0f1;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.input-group select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+#find-route-btn {
+    background: linear-gradient(135deg, #27ae60, #229954);
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#find-route-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+}
+
+#find-route-btn:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+#route-options h3, #route-details h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.route-option {
+    background: rgba(52, 152, 219, 0.1);
+    border: 2px solid #ecf0f1;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.route-option:hover {
+    border-color: #3498db;
+    background: rgba(52, 152, 219, 0.2);
+}
+
+.route-option.selected {
+    border-color: #3498db;
+    background: rgba(52, 152, 219, 0.3);
+}
+
+.route-option h4 {
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+.route-option p {
+    color: #7f8c8d;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+#route-info {
+    background: rgba(46, 204, 113, 0.1);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.route-step {
+    background: white;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-left: 4px solid #3498db;
+}
+
+.route-step h5 {
+    color: #2c3e50;
+    margin-bottom: 5px;
+    font-size: 1rem;
+}
+
+.route-step p {
+    color: #7f8c8d;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.quiz-panel.route-mode-active {
+    padding: 20px;
+}
+
+.quiz-panel.route-mode-active .input-section,
+.quiz-panel.route-mode-active .controls,
+.quiz-panel.route-mode-active .score {
+    display: none;
 }
 
 /* 반응형 디자인 */
