@@ -383,8 +383,9 @@ button {
 
 .quiz-panel.route-mode-active .input-section,
 .quiz-panel.route-mode-active .controls,
-.quiz-panel.route-mode-active .score {
-    display: none;
+.quiz-panel.route-mode-active .score,
+.quiz-panel.route-mode-active .result-section {
+    display: none !important;
 }
 
 /* 반응형 디자인 */
