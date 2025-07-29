@@ -15,10 +15,11 @@
         </header>
         
         <div class="mode-selector">
-            <h2>🎯 퀴즈 모드 선택</h2>
+            <h2>🎯 학습 모드 선택</h2>
             <div class="mode-buttons">
-                <button id="highway-mode" class="mode-btn active">🛣️ 고속도로</button>
-                <button id="seoul-mode" class="mode-btn">🏙️ 서울 도로</button>
+                <button id="highway-mode" class="mode-btn active">🛣️ 고속도로 퀴즈</button>
+                <button id="seoul-mode" class="mode-btn">🏙️ 서울도로 퀴즈</button>
+                <button id="route-mode" class="mode-btn">🗺️ 경로 학습</button>
             </div>
         </div>
 
@@ -28,9 +29,66 @@
             </div>
             
             <div class="quiz-panel">
-                <div class="quiz-info">
+                <div class="quiz-info" id="quiz-mode">
                     <h2 id="quiz-title">🔍 이 고속도로는 무엇일까요?</h2>
                     <p id="quiz-description">파란색으로 표시된 고속도로의 이름이나 번호를 입력하세요.</p>
+                </div>
+                
+                <div class="route-mode" id="route-mode-panel" style="display: none;">
+                    <h2>🗺️ 경로 학습</h2>
+                    <p>출발지와 목적지를 선택하면 추천 경로를 보여드립니다.</p>
+                    
+                    <div class="route-inputs">
+                        <div class="input-group">
+                            <label>📍 출발지</label>
+                            <select id="start-city">
+                                <option value="">출발지를 선택하세요</option>
+                                <option value="seoul">서울</option>
+                                <option value="busan">부산</option>
+                                <option value="daegu">대구</option>
+                                <option value="incheon">인천</option>
+                                <option value="gwangju">광주</option>
+                                <option value="daejeon">대전</option>
+                                <option value="ulsan">울산</option>
+                                <option value="sejong">세종</option>
+                                <option value="gangneung">강릉</option>
+                                <option value="jeonju">전주</option>
+                                <option value="cheonan">천안</option>
+                                <option value="suwon">수원</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>🎯 목적지</label>
+                            <select id="end-city">
+                                <option value="">목적지를 선택하세요</option>
+                                <option value="seoul">서울</option>
+                                <option value="busan">부산</option>
+                                <option value="daegu">대구</option>
+                                <option value="incheon">인천</option>
+                                <option value="gwangju">광주</option>
+                                <option value="daejeon">대전</option>
+                                <option value="ulsan">울산</option>
+                                <option value="sejong">세종</option>
+                                <option value="gangneung">강릉</option>
+                                <option value="jeonju">전주</option>
+                                <option value="cheonan">천안</option>
+                                <option value="suwon">수원</option>
+                            </select>
+                        </div>
+                        
+                        <button id="find-route-btn">경로 찾기</button>
+                    </div>
+                    
+                    <div id="route-options" style="display: none;">
+                        <h3>🛣️ 추천 경로</h3>
+                        <div id="route-list"></div>
+                    </div>
+                    
+                    <div id="route-details" style="display: none;">
+                        <h3>📋 선택한 경로 상세정보</h3>
+                        <div id="route-info"></div>
+                    </div>
                 </div>
                 
                 <div class="input-section">
