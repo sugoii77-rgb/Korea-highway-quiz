@@ -504,43 +504,154 @@ class HighwayQuiz {
         });
     }
     
-    switchMode(mode) {
-        this.currentMode = mode;
+    clearMap() {
+        // 모든 폴리라인 제거
+        if (this.currentPolyline) {
+            this.map.removeLayer(this.currentPolyline);
+            this.currentPolyline = null;
+        }
+        this.clearRoutePolylines();
+    }
+    
+    clearRoutePolylines() {
+        // 경로 폴리라인들 제거
+        this.currentRoutePolylines.forEach(polyline => {
+            this.map.removeLayer(polyline);
+        });
+        this.currentRoutePolylines = [];
+    }
+    
+    findRoutes() {
+        const startCity = document.getElementById('start-city').value;
+        const endCity = document.getElementById('end-city').value;
         
-        // 버튼 활성화 상태 변경
-        const highwayBtn = document.getElementById('highway-mode');
-        const seoulBtn = document.getElementById('seoul-mode');
-        
-        if (mode === 'highway') {
-            highwayBtn.classList.add('active');
-            seoulBtn.classList.remove('active');
-            this.currentDataSet = highways;
-            this.totalQuestions = 10;
-            // 지도 범위를 한국 전체로
-            this.map.setView([36.5, 127.5], 7);
-            document.getElementById('quiz-title').textContent = '🔍 이 고속도로는 무엇일까요?';
-            document.getElementById('quiz-description').textContent = '파란색으로 표시된 고속도로의 이름이나 번호를 입력하세요.';
-        } else {
-            seoulBtn.classList.add('active');
-            highwayBtn.classList.remove('active');
-            this.currentDataSet = seoulRoads;
-            this.totalQuestions = 5;
-            // 지도 범위를 서울로
-            this.map.setView([37.5665, 126.9780], 10);
-            document.getElementById('quiz-title').textContent = '🔍 이 서울 도로는 무엇일까요?';
-            document.getElementById('quiz-description').textContent = '파란색으로 표시된 서울 도로의 이름을 입력하세요.';
+        if (!startCity || !endCity) {
+            alert('출발지와 목적지를 모두 선택해주세요.');
+            return;
         }
         
-        // 게임 상태 초기화
-        this.score = 0;
-        this.currentQuestion = 1;
-        this.usedItems = [];
-        this.wrongAttempts = 0;
+        if (startCity === endCity) {
+            alert('출발지와 목적지가 같습니다. 다른 도시를 선택해주세요.');
+            return;
+        }
         
-        // 총 문제 수 업데이트
-        document.getElementById('total-questions').textContent = this.totalQuestions;
+        // 경로 키 생성 (양방향 지원)
+        const routeKey1 = `${startCity}-${endCity}`;
+        const routeKey2 = `${endCity}-${startCity}`;
         
-        this.startNewQuestion();
+        let routes = predefinedRoutes[routeKey1] || predefinedRoutes[routeKey2];
+        
+        if (!routes) {
+            alert('해당 구간의 경로 정보가 아직 준비되지 않았습니다.');
+            return;
+        }
+        
+        // 역방향인 경우 좌표 뒤집기
+        if (predefinedRoutes[routeKey2] && !predefinedRoutes[routeKey1]) {
+            routes = routes.map(route => ({
+                ...route,
+                coordinates: [...route.coordinates].reverse()
+            }));
+        }
+        
+        this.displayRouteOptions(routes, startCity, endCity);
+    }
+    
+    displayRouteOptions(routes, startCity, endCity) {
+        const routeOptionsDiv = document.getElementById('route-options');
+        const routeListDiv = document.getElementById('route-list');
+        
+        // 기존 경로 제거
+        this.clearRoutePolylines();
+        
+        // 경로 옵션 표시
+        routeListDiv.innerHTML = '';
+        routes.forEach((route, index) => {
+            const routeDiv = document.createElement('div');
+            routeDiv.className = 'route-option';
+            routeDiv.innerHTML = `
+                <h4>${route.name}</h4>
+                <p>거리: ${route.distance} | 소요시간: ${route.time}</p>
+                <p>경유 고속도로: ${route.highways.join(' → ')}</p>
+            `;
+            
+            routeDiv.addEventListener('click', () => this.selectRoute(route, index));
+            routeListDiv.appendChild(routeDiv);
+        });
+        
+        routeOptionsDiv.style.display = 'block';
+        
+        // 지도에 모든 경로를 연한 색으로 표시
+        routes.forEach((route, index) => {
+            const polyline = L.polyline(route.coordinates, {
+                color: index === 0 ? '#3498db' : '#95a5a6',
+                weight: 3,
+                opacity: 0.6
+            }).addTo(this.map);
+            
+            this.currentRoutePolylines.push(polyline);
+        });
+        
+        // 지도 범위 조정
+        if (routes.length > 0) {
+            const allCoordinates = routes.flatMap(route => route.coordinates);
+            const bounds = L.latLngBounds(allCoordinates);
+            this.map.fitBounds(bounds, { padding: [20, 20] });
+        }
+    }
+    
+    selectRoute(route, index) {
+        // 선택된 경로 하이라이트
+        document.querySelectorAll('.route-option').forEach((div, i) => {
+            if (i === index) {
+                div.classList.add('selected');
+            } else {
+                div.classList.remove('selected');
+            }
+        });
+        
+        // 기존 폴리라인들을 연한 색으로 변경
+        this.currentRoutePolylines.forEach((polyline, i) => {
+            if (i === index) {
+                polyline.setStyle({
+                    color: '#27ae60',
+                    weight: 5,
+                    opacity: 0.9
+                });
+            } else {
+                polyline.setStyle({
+                    color: '#bdc3c7',
+                    weight: 2,
+                    opacity: 0.4
+                });
+            }
+        });
+        
+        // 상세 정보 표시
+        this.displayRouteDetails(route);
+    }
+    
+    displayRouteDetails(route) {
+        const routeDetailsDiv = document.getElementById('route-details');
+        const routeInfoDiv = document.getElementById('route-info');
+        
+        routeInfoDiv.innerHTML = `
+            <h4>📍 ${route.name}</h4>
+            <p><strong>총 거리:</strong> ${route.distance}</p>
+            <p><strong>예상 소요시간:</strong> ${route.time}</p>
+            <p><strong>경유 고속도로:</strong> ${route.highways.join(' → ')}</p>
+            <div style="margin-top: 15px;">
+                <h5>🛣️ 상세 경로:</h5>
+                ${route.details.map(detail => `
+                    <div class="route-step">
+                        <h5>${detail.step}</h5>
+                        <p>${detail.description}</p>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        routeDetailsDiv.style.display = 'block';
     }
     
     startNewQuestion() {
