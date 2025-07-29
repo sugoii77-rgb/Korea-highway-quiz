@@ -278,6 +278,7 @@ class HighwayQuiz {
         this.score = 0;
         this.currentQuestion = 1;
         this.usedItems = [];
+        this.wrongAttempts = 0;
         
         // 총 문제 수 업데이트
         document.getElementById('total-questions').textContent = this.totalQuestions;
@@ -298,6 +299,7 @@ class HighwayQuiz {
         this.currentItem = availableItems[randomIndex];
         this.usedItems.push(this.currentItem.id);
         this.hintUsed = false;
+        this.wrongAttempts = 0; // 새 문제마다 오답 횟수 초기화
         
         this.displayItem();
         this.resetUI();
@@ -391,13 +393,37 @@ class HighwayQuiz {
     }
     
     handleIncorrectAnswer() {
-        this.showResult('❌ 틀렸습니다. 다시 시도해보세요!', 'incorrect');
+        this.wrongAttempts = (this.wrongAttempts || 0) + 1;
         
-        // 3초 후 결과 메시지 지우기
-        setTimeout(() => {
-            document.getElementById('result-section').innerHTML = '';
-            document.getElementById('result-section').className = 'result-section';
-        }, 3000);
+        // 3번 틀리면 정답 공개
+        if (this.wrongAttempts >= 3) {
+            const numberText = this.currentItem.number ? ` (${this.currentItem.number})` : '';
+            const resultText = `❌ 오답입니다. 정답은 ${this.currentItem.name}${numberText}입니다.\n` +
+                              `${this.currentItem.description}`;
+            
+            // 폴리라인을 빨간색으로 변경
+            this.currentPolyline.setStyle({
+                color: '#e74c3c',
+                weight: 5
+            });
+            
+            this.showResult(resultText, 'incorrect');
+            this.disableInput();
+            
+            if (this.currentQuestion < this.totalQuestions) {
+                document.getElementById('next-btn').style.display = 'block';
+            } else {
+                setTimeout(() => this.endGame(), 2000);
+            }
+        } else {
+            this.showResult(`❌ 틀렸습니다. 다시 시도해보세요! (${this.wrongAttempts}/3)`, 'incorrect');
+            
+            // 3초 후 결과 메시지 지우기
+            setTimeout(() => {
+                document.getElementById('result-section').innerHTML = '';
+                document.getElementById('result-section').className = 'result-section';
+            }, 3000);
+        }
     }
     
     showHint() {
