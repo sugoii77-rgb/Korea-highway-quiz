@@ -1,56 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="ko">
 <head>
-  <!-- 
-      This is an HTML comment
-      You can write text in a comment and the content won't be visible in the page
-    -->
-
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" href="https://glitch.com/favicon.ico" />
-
-  <!--
-      This is the page head - it contains info the browser uses
-      Like the title, which appears on the browser tab but not inside the page
-      Further down you'll see the content that displays in the page
-    -->
-  <title>Hello World!</title>
-
-  <!-- The website stylesheet -->
-  <link rel="stylesheet" href="/style.css" />
-
-  <!-- The website JavaScript file -->
-  <script src="/script.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한국 전통 요리 지도</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+          crossorigin=""/>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-  <!--
-      The body includes the content you see in the page
-      Each element is defined using tags, like this <div></div>
-      The attributes like class="wrapper" let us style elements in the CSS
-    -->
-  <div class="wrapper">
-    <div class="content" role="main">
-      <h1 class="title">Oh hi website!</h1>
-      <img src="/cool-website.svg" class="illustration" alt="cool website" />
-      <div class="instructions">
-        <p>
-          Fork <a href="https://github.com/glitchdotcom/website-to-compute">this project</a> and open it in a GitHub Codespace.
-        </p>
-        <p> Follow the steps in the README to deploy your new website to Fastly in a few steps!
-        </p>
-
-      </div>
-
-      <footer class="footer">
-        <div>
-          <a class="remix" href="https://github.com/glitchdotcom/website-to-compute">🚧 Get your own site</a>
+    <div class="container">
+        <header>
+            <h1>🍽️ 한국 전통 요리 지도</h1>
+            <p>지역을 클릭하거나 요리를 검색해보세요!</p>
+        </header>
+        
+        <div class="search-container">
+            <input type="text" id="food-search" placeholder="요리명을 검색하세요 (예: 평양냉면, 비빔밥)" autocomplete="off">
+            <button id="search-btn">🔍 검색</button>
+            <button id="reset-btn">🔄 초기화</button>
         </div>
-      </footer>
-    </div>
-  </div>
-</body>
 
+        <div class="main-content">
+            <div class="map-section">
+                <div id="map"></div>
+            </div>
+            
+            <div class="info-panel" id="info-panel">
+                <div class="welcome-message">
+                    <h2>🗺️ 한국의 맛을 탐험하세요</h2>
+                    <p>지도에서 도시를 클릭하면 그 지역의 대표 요리를 볼 수 있습니다.</p>
+                    <p>요리를 클릭하면 흥미로운 유래와 역사를 알아보세요!</p>
+                </div>
+                
+                <div class="city-info" id="city-info" style="display: none;">
+                    <h2 id="city-name"></h2>
+                    <div id="food-cards"></div>
+                </div>
+                
+                <div class="food-detail" id="food-detail" style="display: none;">
+                    <button id="back-btn">← 뒤로가기</button>
+                    <h2 id="food-name"></h2>
+                    <div id="food-content">
+                        <div class="detail-section">
+                            <h3>🏛️ 역사적 배경</h3>
+                            <p id="food-history"></p>
+                        </div>
+                        <div class="detail-section">
+                            <h3>🗺️ 지리적 특성</h3>
+                            <p id="food-geography"></p>
+                        </div>
+                        <div class="detail-section">
+                            <h3>🎭 문화적 의미</h3>
+                            <p id="food-culture"></p>
+                        </div>
+                        <div class="detail-section">
+                            <h3>💡 흥미로운 사실</h3>
+                            <p id="food-trivia"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+            crossorigin=""></script>
+    <script src="script.js"></script>
+</body>
 </html>
