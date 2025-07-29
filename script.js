@@ -1,3 +1,253 @@
+switchMode(mode) {
+        this.currentMode = mode;
+        
+        // 버튼 활성화 상태 변경
+        const highwayBtn = document.getElementById('highway-mode');
+        const seoulBtn = document.getElementById('seoul-mode');
+        const routeBtn = document.getElementById('route-mode');
+        const quizMode = document.getElementById('quiz-mode');
+        const routeModePanel = document.getElementById('route-mode-panel');
+        const quizPanel = document.querySelector('.quiz-panel');
+        
+        // 모든 버튼 비활성화
+        [highwayBtn, seoulBtn, routeBtn].forEach(btn => btn.classList.remove('active'));
+        
+        if (mode === 'highway') {
+            highwayBtn.classList.add('active');
+            this.currentDataSet = highways;
+            this.totalQuestions = 10;
+            this.map.setView([36.5, 127.5], 7);
+            document.getElementById('quiz-title').textContent = '🔍 이 고속도로는 무엇일까요?';
+            document.getElementById('quiz-description').textContent = '파란색으로 표시된 고속도로의 이름이나 번호를 입력하세요.';
+            
+            // UI 전환
+            quizMode.style.display = 'block';
+            routeModePanel.style.display = 'none';
+            quizPanel.classList.remove('route-mode-active');
+            
+            this.resetQuizMode();
+        } else if (mode === 'seoul') {
+            seoulBtn.classList.add('active');
+            this.currentDataSet = seoulRoads;
+            this.totalQuestions = 5;
+            this.map.setView([37.5665, 126.9780], 10);
+            document.getElementById('quiz-title').textContent = '🔍 이 서울 도로는 무엇일까요?';
+            document.getElementById('quiz-description').textContent = '파란색으로 표시된 서울 도로의 이름을 입력하세요.';
+            
+            // UI 전환
+            quizMode.style.display = 'block';
+            routeModePanel.style.display = 'none';
+            quizPanel.classList.remove('route-mode-active');
+            
+            this.resetQuizMode();
+        } else if (mode === 'route') {
+            routeBtn.classList.add('active');
+            this.map.setView([36.5, 127.5], 7);
+            
+            // UI 전환
+            quizMode.style.display = 'none';
+            routeModePanel.style.display = 'block';
+            quizPanel.classList.add('route-mode-active');
+            
+            this.clearMap();
+            this.resetRouteMode();
+        }
+    }
+    
+    resetQuizMode() {
+        // 게임 상태 초기화
+        this.score = 0;
+        this.currentQuestion = 1;
+        this.usedItems = [];
+        this.wrongAttempts = 0;
+        
+        // 총 문제 수 업데이트
+        document.getElementById('total-questions').textContent = this.totalQuestions;
+        
+        this.startNewQuestion();
+    }
+    
+    resetRouteMode() {
+        // 경로 모드 초기화
+        document.getElementById('start-city').value = '';
+        document.getElementById('end-city').value = '';
+        document.getElementById('route-options').style.display = 'none';
+        document.getElementById('route-details').style.display = 'none';
+        this.clearRoutePolylines();
+    }
+    
+    clearMap() {
+        // 모든 폴리라인 제거
+        if (this.currentPolyline) {
+            // 주요 도시 좌표 데이터
+const cities = {
+    seoul: { name: "서울", coord: [37.5665, 126.9780] },
+    busan: { name: "부산", coord: [35.1796, 129.0756] },
+    daegu: { name: "대구", coord: [35.8714, 128.6018] },
+    incheon: { name: "인천", coord: [37.4563, 126.7052] },
+    gwangju: { name: "광주", coord: [35.1596, 126.8526] },
+    daejeon: { name: "대전", coord: [36.3504, 127.3845] },
+    ulsan: { name: "울산", coord: [35.5384, 129.3114] },
+    sejong: { name: "세종", coord: [36.4800, 127.2890] },
+    gangneung: { name: "강릉", coord: [37.7749, 129.0756] },
+    jeonju: { name: "전주", coord: [35.8242, 127.1480] },
+    cheonan: { name: "천안", coord: [36.8151, 127.1139] },
+    suwon: { name: "수원", coord: [37.2636, 127.0286] }
+};
+
+// 미리 정의된 도시 간 경로 데이터
+const predefinedRoutes = {
+    "seoul-busan": [
+        {
+            id: 1,
+            name: "경부고속도로 직행",
+            distance: "417km",
+            time: "약 4시간 30분",
+            highways: ["경부고속도로"],
+            coordinates: [
+                [37.5665, 126.9780], [37.4138, 127.5183], [37.2636, 127.0286],
+                [36.9776, 127.0276], [36.8065, 127.1522], [36.3504, 127.3845],
+                [36.0190, 127.3049], [35.8714, 127.7298], [35.8242, 128.1555],
+                [35.8714, 128.6018], [35.5384, 128.7317], [35.1796, 129.0756]
+            ],
+            details: [
+                { step: "출발", description: "서울 → 경부고속도로 진입" },
+                { step: "경유", description: "수원, 천안, 대전, 김천, 구미, 대구 통과" },
+                { step: "도착", description: "부산 도착" }
+            ]
+        },
+        {
+            id: 2,
+            name: "중부고속도로 경유",
+            distance: "445km",
+            time: "약 5시간",
+            highways: ["중부고속도로", "경부고속도로"],
+            coordinates: [
+                [37.5665, 126.9780], [37.4138, 127.2678], [37.1542, 127.4370],
+                [36.9776, 127.9195], [36.7717, 128.0476], [36.6364, 128.2607],
+                [36.4201, 128.6561], [36.0190, 128.8289], [35.8714, 128.6018],
+                [35.5384, 128.7317], [35.1796, 129.0756]
+            ],
+            details: [
+                { step: "출발", description: "서울 → 중부고속도로 진입" },
+                { step: "환승", description: "안동JC에서 경부고속도로로 환승" },
+                { step: "도착", description: "경부고속도로를 통해 부산 도착" }
+            ]
+        }
+    ],
+    "seoul-gwangju": [
+        {
+            id: 1,
+            name: "호남고속도로 직행",
+            distance: "305km",
+            time: "약 3시간 30분",
+            highways: ["호남고속도로"],
+            coordinates: [
+                [37.5665, 126.9780], [37.2636, 127.0286], [36.9776, 127.0276],
+                [36.8065, 127.1522], [36.3504, 127.3845], [36.1542, 126.9195],
+                [35.8242, 126.8830], [35.1596, 126.8526]
+            ],
+            details: [
+                { step: "출발", description: "서울 → 경부고속도로 진입" },
+                { step: "환승", description: "논산JC에서 호남고속도로로 환승" },
+                { step: "도착", description: "전주, 광주 방면으로 광주 도착" }
+            ]
+        },
+        {
+            id: 2,
+            name: "서해안고속도로 경유",
+            distance: "340km",
+            time: "약 4시간",
+            highways: ["서해안고속도로", "호남고속도로"],
+            coordinates: [
+                [37.5665, 126.9780], [37.4563, 126.7052], [37.2636, 126.8003],
+                [37.0841, 126.6120], [36.9776, 126.4307], [36.6053, 126.4953],
+                [36.3504, 126.4580], [35.9716, 126.4953], [35.8242, 126.8830],
+                [35.1596, 126.8526]
+            ],
+            details: [
+                { step: "출발", description: "서울 → 서해안고속도로 진입" },
+                { step: "환승", description: "서해안고속도로에서 호남고속도로로 환승" },
+                { step: "도착", description: "광주 도착" }
+            ]
+        }
+    ],
+    "seoul-daegu": [
+        {
+            id: 1,
+            name: "경부고속도로 직행",
+            distance: "302km",
+            time: "약 3시간 20분",
+            highways: ["경부고속도로"],
+            coordinates: [
+                [37.5665, 126.9780], [37.4138, 127.5183], [37.2636, 127.0286],
+                [36.9776, 127.0276], [36.8065, 127.1522], [36.3504, 127.3845],
+                [36.0190, 127.3049], [35.8714, 127.7298], [35.8242, 128.1555],
+                [35.8714, 128.6018]
+            ],
+            details: [
+                { step: "출발", description: "서울 → 경부고속도로 진입" },
+                { step: "경유", description: "수원, 천안, 대전, 김천, 구미 통과" },
+                { step: "도착", description: "대구 도착" }
+            ]
+        },
+        {
+            id: 2,
+            name: "중앙고속도로 경유",
+            distance: "320km",
+            time: "약 3시간 50분",
+            highways: ["중앙고속도로"],
+            coordinates: [
+                [37.5665, 126.9780], [37.6364, 127.2678], [37.5326, 127.4370],
+                [37.2820, 128.1555], [36.9776, 128.4102], [36.5384, 128.7298],
+                [35.8714, 128.6018]
+            ],
+            details: [
+                { step: "출발", description: "서울 → 중앙고속도로 진입" },
+                { step: "경유", description: "춘천, 원주, 제천, 안동 통과" },
+                { step: "도착", description: "대구 도착" }
+            ]
+        }
+    ],
+    "seoul-gangneung": [
+        {
+            id: 1,
+            name: "영동고속도로 직행",
+            distance: "165km",
+            time: "약 2시간",
+            highways: ["영동고속도로"],
+            coordinates: [
+                [37.5665, 126.9780], [37.6014, 127.0841], [37.6364, 127.2678],
+                [37.5326, 127.4370], [37.4201, 127.6189], [37.3422, 127.9195],
+                [37.2820, 128.1555], [37.3422, 128.4102], [37.8853, 128.8289], [37.7749, 129.0756]
+            ],
+            details: [
+                { step: "출발", description: "서울 → 영동고속도로 진입" },
+                { step: "경유", description: "하남, 여주, 원주, 평창 통과" },
+                { step: "도착", description: "강릉 도착" }
+            ]
+        }
+    ],
+    "daejeon-busan": [
+        {
+            id: 1,
+            name: "경부고속도로 직행",
+            distance: "200km",
+            time: "약 2시간 20분",
+            highways: ["경부고속도로"],
+            coordinates: [
+                [36.3504, 127.3845], [36.0190, 127.3049], [35.8714, 127.7298],
+                [35.8242, 128.1555], [35.8714, 128.6018], [35.5384, 128.7317],
+                [35.1796, 129.0756]
+            ],
+            details: [
+                { step: "출발", description: "대전 → 경부고속도로 진입" },
+                { step: "경유", description: "김천, 구미, 대구 통과" },
+                { step: "도착", description: "부산 도착" }
+            ]
+        }
+    ]
+};
 // 한국 고속도로 데이터 (실제 좌표 기반) - 확장됨
 const highways = [
     {
@@ -205,8 +455,9 @@ class HighwayQuiz {
         this.totalQuestions = 15;
         this.usedItems = [];
         this.hintUsed = false;
-        this.currentMode = 'highway'; // 'highway' or 'seoul'
+        this.currentMode = 'highway'; // 'highway', 'seoul', 'route'
         this.currentDataSet = highways;
+        this.currentRoutePolylines = []; // 경로 모드용 폴리라인들
         
         this.initMap();
         this.initEventListeners();
@@ -230,6 +481,8 @@ class HighwayQuiz {
         const answerInput = document.getElementById('answer-input');
         const highwayModeBtn = document.getElementById('highway-mode');
         const seoulModeBtn = document.getElementById('seoul-mode');
+        const routeModeBtn = document.getElementById('route-mode');
+        const findRouteBtn = document.getElementById('find-route-btn');
         
         submitBtn.addEventListener('click', () => this.checkAnswer());
         nextBtn.addEventListener('click', () => this.nextQuestion());
@@ -238,6 +491,10 @@ class HighwayQuiz {
         // 모드 선택 버튼
         highwayModeBtn.addEventListener('click', () => this.switchMode('highway'));
         seoulModeBtn.addEventListener('click', () => this.switchMode('seoul'));
+        routeModeBtn.addEventListener('click', () => this.switchMode('route'));
+        
+        // 경로 찾기 버튼
+        findRouteBtn.addEventListener('click', () => this.findRoutes());
         
         // Enter 키로 정답 제출
         answerInput.addEventListener('keypress', (e) => {
