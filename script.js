@@ -80,6 +80,27 @@ const predefinedRoutes = {
                 { step: "경유", description: "전주IC 통과" },
                 { step: "도착", description: "광주IC 도착" }
             ]
+        },
+        {
+            id: 2,
+            name: "서해안고속도로 경유",
+            distance: "340km",
+            time: "약 4시간",
+            highways: ["서해안고속도로", "서공주IC", "호남고속도로"],
+            coordinates: [
+                [37.5665, 126.9780], // 서울
+                [37.4563, 126.7052], // 인천
+                [36.6053, 126.4953], // 서산
+                [36.1542, 126.9195], // 서공주IC
+                [35.8242, 127.1480], // 전주
+                [35.1596, 126.8526]  // 광주
+            ],
+            details: [
+                { step: "출발", description: "서울 → 서해안고속도로 진입" },
+                { step: "경유", description: "인천 → 서산 통과" },
+                { step: "환승", description: "서공주IC → 호남고속도로 환승" },
+                { step: "도착", description: "광주 도착" }
+            ]
         }
     ],
     "seoul-gangneung": [
@@ -122,6 +143,117 @@ const predefinedRoutes = {
                 { step: "출발", description: "서울 → 경부고속도로 진입" },
                 { step: "경유", description: "수원IC → 천안IC → 대전IC 통과" },
                 { step: "도착", description: "대구IC 도착" }
+            ]
+        },
+        {
+            id: 2,
+            name: "중앙고속도로 직행",
+            distance: "320km",
+            time: "약 3시간 50분",
+            highways: ["중앙고속도로"],
+            coordinates: [
+                [37.5665, 126.9780], // 서울
+                [37.6364, 127.2678], // 구리
+                [37.2820, 128.1555], // 원주
+                [36.9776, 128.4102], // 제천
+                [36.0190, 128.8289], // 안동
+                [35.8714, 128.6018]  // 대구
+            ],
+            details: [
+                { step: "출발", description: "서울 → 중앙고속도로 진입" },
+                { step: "경유", description: "구리IC → 원주IC → 제천IC → 안동IC 통과" },
+                { step: "도착", description: "대구IC 도착" }
+            ]
+        }
+    ],
+    "seoul-incheon": [
+        {
+            id: 1,
+            name: "경인고속도로 직행",
+            distance: "40km",
+            time: "약 45분",
+            highways: ["경인고속도로"],
+            coordinates: [
+                [37.5665, 126.9780], // 서울
+                [37.4563, 126.7052]  // 인천
+            ],
+            details: [
+                { step: "출발", description: "서울 → 경인고속도로 진입" },
+                { step: "도착", description: "인천IC 도착" }
+            ]
+        },
+        {
+            id: 2,
+            name: "제2경인고속도로",
+            distance: "42km",
+            time: "약 50분",
+            highways: ["제2경인고속도로"],
+            coordinates: [
+                [37.5665, 126.9780], // 서울
+                [37.3636, 126.8003], // 안양
+                [37.4563, 126.7052]  // 인천
+            ],
+            details: [
+                { step: "출발", description: "서울 → 제2경인고속도로 진입" },
+                { step: "경유", description: "안양IC 통과" },
+                { step: "도착", description: "인천 도착" }
+            ]
+        }
+    ],
+    "seoul-daejeon": [
+        {
+            id: 1,
+            name: "경부고속도로 직행",
+            distance: "140km",
+            time: "약 1시간 30분",
+            highways: ["경부고속도로"],
+            coordinates: [
+                [37.5665, 126.9780], // 서울
+                [37.2636, 127.0286], // 수원
+                [36.8151, 127.1139], // 천안
+                [36.3504, 127.3845]  // 대전
+            ],
+            details: [
+                { step: "출발", description: "서울 → 경부고속도로 진입" },
+                { step: "경유", description: "수원IC → 천안IC 통과" },
+                { step: "도착", description: "대전IC 도착" }
+            ]
+        }
+    ],
+    "busan-daegu": [
+        {
+            id: 1,
+            name: "경부고속도로 직행",
+            distance: "115km",
+            time: "약 1시간 20분",
+            highways: ["경부고속도로"],
+            coordinates: [
+                [35.1796, 129.0756], // 부산
+                [35.8714, 128.6018]  // 대구
+            ],
+            details: [
+                { step: "출발", description: "부산 → 경부고속도로 진입" },
+                { step: "도착", description: "대구IC 도착" }
+            ]
+        }
+    ],
+    "daejeon-gwangju": [
+        {
+            id: 1,
+            name: "호남고속도로 직행",
+            distance: "165km",
+            time: "약 2시간",
+            highways: ["호남고속도로"],
+            coordinates: [
+                [36.3504, 127.3845], // 대전
+                [36.1542, 126.9195], // 논산JC
+                [35.8242, 127.1480], // 전주
+                [35.1596, 126.8526]  // 광주
+            ],
+            details: [
+                { step: "출발", description: "대전 → 호남고속도로 진입" },
+                { step: "경유", description: "논산JC → 전주IC 통과" },
+                { step: "도착", description: "광주IC 도착" }
             ]
         }
     ]
@@ -387,12 +519,29 @@ class HighwayQuiz {
             return;
         }
         
-        const routeKey = `${startCity}-${endCity}`;
-        let routes = predefinedRoutes[routeKey];
+        // 양방향 경로 키 확인
+        const routeKey1 = `${startCity}-${endCity}`;
+        const routeKey2 = `${endCity}-${startCity}`;
+        
+        let routes = predefinedRoutes[routeKey1] || predefinedRoutes[routeKey2];
         
         if (!routes) {
-            alert('해당 구간의 경로 정보가 아직 준비되지 않았습니다.');
+            // 사용 가능한 경로 목록 표시
+            const availableRoutes = Object.keys(predefinedRoutes).map(key => {
+                const [start, end] = key.split('-');
+                return `${cities[start]?.name || start} ↔ ${cities[end]?.name || end}`;
+            }).join('\n');
+            
+            alert(`해당 구간의 경로가 아직 준비되지 않았습니다.\n\n현재 이용 가능한 구간:\n${availableRoutes}`);
             return;
+        }
+        
+        // 역방향인 경우 좌표 뒤집기
+        if (predefinedRoutes[routeKey2] && !predefinedRoutes[routeKey1]) {
+            routes = routes.map(route => ({
+                ...route,
+                coordinates: [...route.coordinates].reverse()
+            }));
         }
         
         this.displayRouteOptions(routes);
