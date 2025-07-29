@@ -1,4 +1,5 @@
 switchMode(mode) {
+        console.log('모드 전환 시도:', mode); // 디버그용
         this.currentMode = mode;
         
         // 버튼 활성화 상태 변경
@@ -9,11 +10,15 @@ switchMode(mode) {
         const routeModePanel = document.getElementById('route-mode-panel');
         const quizPanel = document.querySelector('.quiz-panel');
         
+        console.log('요소들 확인:', { highwayBtn, seoulBtn, routeBtn, quizMode, routeModePanel, quizPanel }); // 디버그용
+        
         // 모든 버튼 비활성화
-        [highwayBtn, seoulBtn, routeBtn].forEach(btn => btn.classList.remove('active'));
+        [highwayBtn, seoulBtn, routeBtn].forEach(btn => {
+            if (btn) btn.classList.remove('active');
+        });
         
         if (mode === 'highway') {
-            highwayBtn.classList.add('active');
+            if (highwayBtn) highwayBtn.classList.add('active');
             this.currentDataSet = highways;
             this.totalQuestions = 10;
             this.map.setView([36.5, 127.5], 7);
@@ -21,13 +26,13 @@ switchMode(mode) {
             document.getElementById('quiz-description').textContent = '파란색으로 표시된 고속도로의 이름이나 번호를 입력하세요.';
             
             // UI 전환
-            quizMode.style.display = 'block';
-            routeModePanel.style.display = 'none';
-            quizPanel.classList.remove('route-mode-active');
+            if (quizMode) quizMode.style.display = 'block';
+            if (routeModePanel) routeModePanel.style.display = 'none';
+            if (quizPanel) quizPanel.classList.remove('route-mode-active');
             
             this.resetQuizMode();
         } else if (mode === 'seoul') {
-            seoulBtn.classList.add('active');
+            if (seoulBtn) seoulBtn.classList.add('active');
             this.currentDataSet = seoulRoads;
             this.totalQuestions = 5;
             this.map.setView([37.5665, 126.9780], 10);
@@ -35,19 +40,20 @@ switchMode(mode) {
             document.getElementById('quiz-description').textContent = '파란색으로 표시된 서울 도로의 이름을 입력하세요.';
             
             // UI 전환
-            quizMode.style.display = 'block';
-            routeModePanel.style.display = 'none';
-            quizPanel.classList.remove('route-mode-active');
+            if (quizMode) quizMode.style.display = 'block';
+            if (routeModePanel) routeModePanel.style.display = 'none';
+            if (quizPanel) quizPanel.classList.remove('route-mode-active');
             
             this.resetQuizMode();
         } else if (mode === 'route') {
-            routeBtn.classList.add('active');
+            console.log('경로 모드 활성화'); // 디버그용
+            if (routeBtn) routeBtn.classList.add('active');
             this.map.setView([36.5, 127.5], 7);
             
             // UI 전환
-            quizMode.style.display = 'none';
-            routeModePanel.style.display = 'block';
-            quizPanel.classList.add('route-mode-active');
+            if (quizMode) quizMode.style.display = 'none';
+            if (routeModePanel) routeModePanel.style.display = 'block';
+            if (quizPanel) quizPanel.classList.add('route-mode-active');
             
             this.clearMap();
             this.resetRouteMode();
@@ -479,29 +485,47 @@ class HighwayQuiz {
         const nextBtn = document.getElementById('next-btn');
         const hintBtn = document.getElementById('hint-btn');
         const answerInput = document.getElementById('answer-input');
-        const highwayModeBtn = document.getElementById('highway-mode');
-        const seoulModeBtn = document.getElementById('seoul-mode');
-        const routeModeBtn = document.getElementById('route-mode');
-        const findRouteBtn = document.getElementById('find-route-btn');
         
-        submitBtn.addEventListener('click', () => this.checkAnswer());
-        nextBtn.addEventListener('click', () => this.nextQuestion());
-        hintBtn.addEventListener('click', () => this.showHint());
+        // 모드 선택 버튼들 (DOM이 완전히 로드된 후 처리)
+        setTimeout(() => {
+            const highwayModeBtn = document.getElementById('highway-mode');
+            const seoulModeBtn = document.getElementById('seoul-mode');
+            const routeModeBtn = document.getElementById('route-mode');
+            const findRouteBtn = document.getElementById('find-route-btn');
+            
+            if (highwayModeBtn) {
+                highwayModeBtn.addEventListener('click', () => this.switchMode('highway'));
+            }
+            if (seoulModeBtn) {
+                seoulModeBtn.addEventListener('click', () => this.switchMode('seoul'));
+            }
+            if (routeModeBtn) {
+                routeModeBtn.addEventListener('click', () => this.switchMode('route'));
+                console.log('경로 학습 버튼 이벤트 리스너 연결됨'); // 디버그용
+            }
+            if (findRouteBtn) {
+                findRouteBtn.addEventListener('click', () => this.findRoutes());
+            }
+        }, 100);
         
-        // 모드 선택 버튼
-        highwayModeBtn.addEventListener('click', () => this.switchMode('highway'));
-        seoulModeBtn.addEventListener('click', () => this.switchMode('seoul'));
-        routeModeBtn.addEventListener('click', () => this.switchMode('route'));
-        
-        // 경로 찾기 버튼
-        findRouteBtn.addEventListener('click', () => this.findRoutes());
+        if (submitBtn) {
+            submitBtn.addEventListener('click', () => this.checkAnswer());
+        }
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => this.nextQuestion());
+        }
+        if (hintBtn) {
+            hintBtn.addEventListener('click', () => this.showHint());
+        }
         
         // Enter 키로 정답 제출
-        answerInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !submitBtn.disabled) {
-                this.checkAnswer();
-            }
-        });
+        if (answerInput) {
+            answerInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && submitBtn && !submitBtn.disabled) {
+                    this.checkAnswer();
+                }
+            });
+        }
     }
     
     clearMap() {
