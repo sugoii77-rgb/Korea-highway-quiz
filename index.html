@@ -14,6 +14,14 @@
             <p>지도에 표시된 고속도로의 이름 또는 번호를 맞춰보세요!</p>
         </header>
         
+        <div class="mode-selector">
+            <h2>🎯 퀴즈 모드 선택</h2>
+            <div class="mode-buttons">
+                <button id="highway-mode" class="mode-btn active">🛣️ 고속도로</button>
+                <button id="seoul-mode" class="mode-btn">🏙️ 서울 도로</button>
+            </div>
+        </div>
+
         <div class="game-area">
             <div class="map-container">
                 <div id="map"></div>
@@ -21,7 +29,7 @@
             
             <div class="quiz-panel">
                 <div class="quiz-info">
-                    <h2>🔍 이 고속도로는 무엇일까요?</h2>
+                    <h2 id="quiz-title">🔍 이 고속도로는 무엇일까요?</h2>
                     <p id="quiz-description">파란색으로 표시된 고속도로의 이름이나 번호를 입력하세요.</p>
                 </div>
                 
@@ -41,7 +49,7 @@
                 
                 <div class="score">
                     <span>점수: <span id="score">0</span></span>
-                    <span>문제: <span id="current-question">1</span> / <span id="total-questions">5</span></span>
+                    <span>문제: <span id="current-question">1</span> / <span id="total-questions">15</span></span>
                 </div>
             </div>
         </div>
