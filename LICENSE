@@ -1,21 +1,53 @@
-MIT License
-
-Copyright (c) 2025 Glitch
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한국 고속도로 퀴즈</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛣️ 한국 고속도로 퀴즈</h1>
+            <p>지도에 표시된 고속도로의 이름 또는 번호를 맞춰보세요!</p>
+        </header>
+        
+        <div class="game-area">
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
+            
+            <div class="quiz-panel">
+                <div class="quiz-info">
+                    <h2>🔍 이 고속도로는 무엇일까요?</h2>
+                    <p id="quiz-description">파란색으로 표시된 고속도로의 이름이나 번호를 입력하세요.</p>
+                </div>
+                
+                <div class="input-section">
+                    <input type="text" id="answer-input" placeholder="예: 경부고속도로 또는 1호선" autocomplete="off">
+                    <button id="submit-btn">정답 확인</button>
+                </div>
+                
+                <div class="result-section" id="result-section">
+                    <!-- 결과가 여기에 표시됩니다 -->
+                </div>
+                
+                <div class="controls">
+                    <button id="next-btn" style="display: none;">다음 문제</button>
+                    <button id="hint-btn">💡 힌트</button>
+                </div>
+                
+                <div class="score">
+                    <span>점수: <span id="score">0</span></span>
+                    <span>문제: <span id="current-question">1</span> / <span id="total-questions">5</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
