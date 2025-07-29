@@ -877,6 +877,24 @@ class HighwayQuiz {
 }
 
 // 페이지 로드 완료 후 게임 시작
-document.addEventListener('DOMContentLoaded', () => {
+if (typeof L !== 'undefined') {
+    console.log('Leaflet 사용 가능, 게임 초기화 시작');
     new HighwayQuiz();
-});
+} else {
+    console.error('Leaflet을 불러올 수 없습니다');
+    // Leaflet 로딩 재시도
+    let retryCount = 0;
+    const checkLeaflet = setInterval(() => {
+        retryCount++;
+        console.log('Leaflet 로딩 재시도', retryCount);
+        if (typeof L !== 'undefined') {
+            console.log('Leaflet 로딩 성공!');
+            clearInterval(checkLeaflet);
+            new HighwayQuiz();
+        } else if (retryCount > 20) {
+            console.error('Leaflet 로딩 실패');
+            clearInterval(checkLeaflet);
+            document.getElementById('map').innerHTML = '<div style="padding: 20px; text-align: center; color: red;">지도를 불러올 수 없습니다. 페이지를 새로고침해주세요.</div>';
+        }
+    }, 500);
+}
