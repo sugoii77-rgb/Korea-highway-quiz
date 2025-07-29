@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>한국 고속도로 퀴즈</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+          crossorigin=""/>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -113,7 +115,29 @@
         </div>
     </div>
     
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="script.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+            crossorigin=""></script>
+    <script>
+        // Leaflet 로딩 확인
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM 로드 완료');
+            if (typeof L !== 'undefined') {
+                console.log('Leaflet 로드 성공');
+                // script.js 로드
+                const script = document.createElement('script');
+                script.src = 'script.js';
+                script.onload = function() {
+                    console.log('script.js 로드 완료');
+                };
+                script.onerror = function() {
+                    console.error('script.js 로드 실패');
+                };
+                document.head.appendChild(script);
+            } else {
+                console.error('Leaflet 로드 실패');
+            }
+        });
+    </script>
 </body>
 </html>
